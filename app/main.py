@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import FastAPI, Depends
 import ssl
 import truststore
 import httpx
@@ -19,7 +20,7 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 @app.get("/datasets")
-def raw_dataset(URL: str = URL):
+def raw_dataset():
     response = httpx.get(URL, verify=ctx)
 
     return response.json()
