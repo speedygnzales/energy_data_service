@@ -1,14 +1,8 @@
 from fastapi import FastAPI
-import ssl
-import truststore
-import httpx
+from app.api_handler import fetch_datasets
 
 
-__URL = "https://energiedashboard.ch/api/v1/datasets"
-ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-response = httpx.get(__URL, verify=ctx)
 app = FastAPI(title="Energy Data Service")
-
 
 
 @app.get("/")
@@ -23,7 +17,6 @@ def health() -> dict[str, str]:
 
 @app.get("/datasets")
 def raw_dataset():
-    
-    return response.json()
+    return fetch_datasets()
 
 
