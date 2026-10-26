@@ -16,15 +16,13 @@ def health() -> dict[str, str]:
 
 @app.get("/datasets")
 def data_filter():
-    filtered_ds = []
     data_set = fetch_datasets()["datasets"]
-
+    filtered_ds = {"datasets": []}
 
     for ds in data_set:
-        if ["id" in ds 
-            and "name" in ds
-            and "description" in ds]:
-            filtered_ds.append(ds)
+        filtered_ds["datasets"].append({"id": ds["id"],
+                                        "name": ds["name"],
+                                        "description": ds["description"]})
 
     return filtered_ds
 
