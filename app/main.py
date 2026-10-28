@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from app.api_handler import fetch_datasets
+from fastapi import FastAPI, HTTPException
+from app.api_handler import fetch_datasets, ExternalAPIError, ExternalAPITimeout
 
 
 app = FastAPI(title="Energy Data Service")
@@ -14,17 +14,27 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/datasets")
-def data_filter():
-    data_set = fetch_datasets()["datasets"]
-    filtered_ds = {"datasets": []}
+@app.get(
+    "/datasets",
+    responses={
+        502: {"description": "Energy data source failed or sent invalid data"},
+        504: {"description": "Energy data source did not respond in time"},
+    },
+)
+def get_dataset():
+        
+    try:
+        data_set = fetch_datasets()["datasets"]
+        filtered_ds = {"datasets": []}
+        
+        for ds in data_set:
+            filtered_ds["datasets"].append({"id": ds.get("id"),
+                                            "name": ds.get("name"),
+                                            "description": ds.get("description")})
 
-    for ds in data_set:
-        filtered_ds["datasets"].append({"id": ds["id"],
-                                        "name": ds["name"],
-                                        "description": ds["description"]})
-
-    return filtered_ds
-
-
+        return filtered_ds
+    except ExternalAPITimeout:
+        raise HTTPException(status_code=504, detail="Energy data source did not respond in time")
+    except ExternalAPIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
 

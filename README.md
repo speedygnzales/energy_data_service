@@ -1,4 +1,3 @@
-
 # Energy Data Service
 
 FastAPI backend for the Energy Data Service. It fetches the list of available energy datasets from the public Energy Dashboard API of the Swiss Federal Office of Energy (SFOE) and serves it through its own API.
@@ -66,3 +65,12 @@ A working setup returns HTTP 200 and a JSON object with a `datasets` list.
 ## Note on certificates
 
 The service uses `truststore`, so Python trusts the certificates of your operating system. This is needed on networks that inspect HTTPS traffic, such as many corporate networks. Without it, requests to the external API fail with `CERTIFICATE_VERIFY_FAILED`.
+
+## Error responses
+
+If the external API cannot be used, `/datasets` returns an error instead of crashing:
+
+* `502` when the source is unreachable, returns an error status or sends invalid JSON
+* `504` when the source does not respond within 10 seconds
+
+The response contains a `detail` field with the reason.
