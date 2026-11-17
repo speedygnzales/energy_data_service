@@ -95,7 +95,7 @@ The service uses `truststore`, so Python trusts the certificates of your operati
 
 If the external API cannot be used, `/datasets` and `/consumption/per-capita` return an error instead of crashing:
 
-* `502` when the source is unreachable, returns an error status or sends invalid JSON
+* `502` when the source is unreachable, returns an error status or sends invalid JSON or sends data in an unexpected format
 * `504` when the source does not respond within 10 seconds
 * `404` (only `/consumption/per-capita`) when there is no data for the given year
 * `422` (only `/consumption/per-capita`) when `year` is not a number
